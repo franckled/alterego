@@ -30,13 +30,6 @@
                     },
                     animation: {
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 6s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' },
-                        }
                     }
                 }
             }
@@ -88,7 +81,7 @@
             box-shadow: 0 4px 15px rgba(79, 70, 229, 0.25);
         }
         .message-bubble-ego {
-            background: rgba(30, 41, 59, 0.8);
+            background: rgba(30, 41, 59, 0.85);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
@@ -104,7 +97,7 @@
     <header class="border-b border-slate-800/80 glass-panel sticky top-0 z-50 px-4 py-3 sm:px-8 flex justify-between items-center">
         <div class="flex items-center space-x-3">
             <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
-                <i class="fa-solid font-bold fa-timeline text-white text-lg"></i>
+                <i class="fa-solid fa-timeline text-white text-lg"></i>
             </div>
             <div>
                 <h1 class="font-bold text-base sm:text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-indigo-200 bg-clip-text text-transparent">Parallel Ego</h1>
@@ -114,7 +107,7 @@
         
         <button id="resetBtn" onclick="resetChat()" class="hidden text-xs sm:text-sm px-3.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white transition-all border border-slate-700/50 flex items-center space-x-2">
             <i class="fa-solid fa-rotate-right text-xs"></i>
-            <span>Recommencer</span>
+            <span>Réinitialiser et recommencer</span>
         </button>
     </header>
 
@@ -132,26 +125,65 @@
                     Et si vous aviez fait un autre choix ?
                 </h2>
                 <p class="text-slate-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-                    Décrivez un moment clé de votre passé. Nous établirons un pont temporel avec la version de vous qui a emprunté la voie différente.
+                    Saisissez votre clé API et décrivez un moment clé de votre passé pour contacter la version de vous qui a pris l'autre voie.
                 </p>
             </div>
 
+            <!-- Error Banner -->
+            <div id="setupErrorMsg" class="hidden p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm flex items-center space-x-3">
+                <i class="fa-solid fa-triangle-exclamation text-red-400 text-lg shrink-0"></i>
+                <span id="setupErrorText">Une erreur est survenue.</span>
+            </div>
+
             <div class="glass-panel p-6 sm:p-8 rounded-2xl shadow-2xl border border-slate-800 space-y-5">
+                
+                <!-- Clé API Gemini -->
+                <div>
+                    <div class="flex justify-between items-center mb-2">
+                        <label for="apiKeyInput" class="block text-sm font-semibold text-slate-200">
+                            Clé API Google Gemini :
+                        </label>
+                        <a href="https://aistudio.google.com/" target="_blank" class="text-xs text-indigo-400 hover:text-indigo-300 underline flex items-center space-x-1">
+                            <span>Obtenir une clé gratuite sur AI Studio</span>
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                        </a>
+                    </div>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="apiKeyInput" 
+                            class="w-full glass-input rounded-xl px-4 py-3 text-slate-100 placeholder-slate-500 focus:outline-none transition-all text-sm pr-10"
+                            placeholder="AIzaSy..."
+                        />
+                        <button type="button" onclick="toggleKeyVisibility()" class="absolute right-3 top-3 text-slate-400 hover:text-slate-200">
+                            <i id="keyEyeIcon" class="fa-solid fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                    <div class="mt-2 flex items-center justify-between text-xs text-slate-400">
+                        <label class="flex items-center space-x-2 cursor-pointer">
+                            <input type="checkbox" id="rememberKeyCheckbox" class="rounded bg-slate-800 border-slate-700 text-indigo-600 focus:ring-indigo-500">
+                            <span>Mémoriser la clé dans mon navigateur</span>
+                        </label>
+                        <span class="text-slate-500 text-[11px]">Gardée en local (localStorage)</span>
+                    </div>
+                </div>
+
+                <!-- Décision Divergente -->
                 <div>
                     <label for="divergenceInput" class="block text-sm font-semibold text-slate-200 mb-2">
-                        Décrivez une décision importante et le chemin non pris :
+                        Décrivez une décision importante de votre vie et le chemin que vous n'avez pas pris :
                     </label>
                     <textarea 
                         id="divergenceInput" 
-                        rows="4" 
+                        rows="3" 
                         class="w-full glass-input rounded-xl p-4 text-slate-100 placeholder-slate-500 focus:outline-none transition-all text-sm sm:text-base resize-none"
-                        placeholder="Ex : J'ai choisi d'étudier l'ingénierie au lieu de me consacrer entièrement à la musique..."
+                        placeholder="J'ai choisi d'étudier l'ingénierie au lieu de poursuivre la musique"
                     ></textarea>
                 </div>
 
                 <div class="flex items-start space-x-3 text-xs text-slate-400 bg-slate-900/50 p-3 rounded-lg border border-slate-800">
                     <i class="fa-solid fa-circle-info text-indigo-400 mt-0.5"></i>
-                    <p>Votre Alter Ego aura les souvenirs de tout votre passé commun jusqu'à ce point de rupture, puis sa propre expérience vécue depuis.</p>
+                    <p>Votre Alter Ego aura les souvenirs de votre passé commun jusqu'à cette décision, puis sa propre expérience de vie de l'univers parallèle.</p>
                 </div>
 
                 <button 
@@ -159,7 +191,7 @@
                     id="startBtn"
                     class="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm sm:text-base shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/50 transition-all duration-200 flex items-center justify-center space-x-2 group"
                 >
-                    <span>Ouvrir la brèche dimensionnelle</span>
+                    <span>Démarrer le chat</span>
                     <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
                 </button>
             </div>
@@ -173,11 +205,11 @@
                 <div class="flex items-center space-x-3">
                     <div class="relative">
                         <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-violet-600 to-indigo-500 flex items-center justify-center text-white font-bold text-sm">
-                            AE
+                            <i class="fa-solid fa-user-astronaut"></i>
                         </div>
                         <span class="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full" title="Signal stabilisé"></span>
                     </div>
-                    <div>
+                    <div class="overflow-hidden">
                         <div class="flex items-center space-x-2">
                             <h3 class="font-semibold text-sm sm:text-base text-slate-100">Votre Alter Ego</h3>
                             <span class="text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 font-mono">EN LIGNE</span>
@@ -188,23 +220,34 @@
 
                 <div class="text-xs text-slate-500 hidden sm:flex items-center space-x-1">
                     <i class="fa-solid fa-shield-halved text-indigo-400"></i>
-                    <span>Canal Sécurisé</span>
+                    <span>Canal Quantique</span>
                 </div>
+            </div>
+
+            <!-- Chat Error Banner -->
+            <div id="chatErrorMsg" class="hidden mx-4 mt-3 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-circle-exclamation text-red-400"></i>
+                    <span id="chatErrorText">Erreur de communication</span>
+                </div>
+                <button onclick="hideChatError()" class="text-slate-400 hover:text-slate-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
 
             <!-- Messages Stream Area -->
             <div id="messagesContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-                <!-- Messages dynamic injection -->
+                <!-- Messages injected dynamically -->
             </div>
 
-            <!-- Typing Indicator (Hidden by default) -->
+            <!-- Typing Indicator -->
             <div id="typingIndicator" class="hidden px-6 py-2 text-xs text-slate-400 flex items-center space-x-2">
                 <div class="flex space-x-1 items-center">
                     <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0s"></span>
                     <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.15s"></span>
                     <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-bounce" style="animation-delay: 0.3s"></span>
                 </div>
-                <span class="italic">L'alter ego rédige une réponse...</span>
+                <span class="italic">L'alter ego écrit...</span>
             </div>
 
             <!-- Chat Input Bar -->
@@ -233,192 +276,224 @@
 
     <!-- Footer -->
     <footer class="py-3 text-center text-xs text-slate-600">
-        Parallel Ego &copy; Univers Réseau Interdimensionnel &bull; Propulsé par Gemini AI
+        Parallel Ego &copy; Multivers Communication &bull; Propulsé par Google Gemini 2.5
     </footer>
 
-    <!-- Logic Script -->
-    <script>
+    <!-- JS Logic with Google GenAI SDK Import -->
+    <script type="module">
+        import { GoogleGenAI } from 'https://esm.run/@google/genai';
+
         // Global State Variables
         let chatHistory = [];
         let divergenceText = "";
+        let apiKey = "";
         let isProcessing = false;
+        let aiClient = null;
 
-        // DOM Element references
+        // DOM References
         const setupSection = document.getElementById('setupSection');
         const chatSection = document.getElementById('chatSection');
         const divergenceInput = document.getElementById('divergenceInput');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const rememberKeyCheckbox = document.getElementById('rememberKeyCheckbox');
         const messagesContainer = document.getElementById('messagesContainer');
         const messageInput = document.getElementById('messageInput');
         const typingIndicator = document.getElementById('typingIndicator');
         const resetBtn = document.getElementById('resetBtn');
         const chatSubHeader = document.getElementById('chatSubHeader');
         const sendBtn = document.getElementById('sendBtn');
+        const setupErrorMsg = document.getElementById('setupErrorMsg');
+        const setupErrorText = document.getElementById('setupErrorText');
+        const chatErrorMsg = document.getElementById('chatErrorMsg');
+        const chatErrorText = document.getElementById('chatErrorText');
+
+        // Load saved API key on startup
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedKey = localStorage.getItem('parallel_ego_gemini_key');
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+                rememberKeyCheckbox.checked = true;
+            }
+        });
+
+        // Toggle Key Visibility
+        window.toggleKeyVisibility = function() {
+            const eyeIcon = document.getElementById('keyEyeIcon');
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                eyeIcon.classList.remove('fa-eye');
+                eyeIcon.classList.add('fa-eye-slash');
+            } else {
+                apiKeyInput.type = 'password';
+                eyeIcon.classList.remove('fa-eye-slash');
+                eyeIcon.classList.add('fa-eye');
+            }
+        };
+
+        function showSetupError(msg) {
+            setupErrorText.innerText = msg;
+            setupErrorMsg.classList.remove('hidden');
+        }
+
+        function hideSetupError() {
+            setupErrorMsg.classList.add('hidden');
+        }
+
+        function showChatError(msg) {
+            chatErrorText.innerText = msg;
+            chatErrorMsg.classList.remove('hidden');
+        }
+
+        window.hideChatError = function() {
+            chatErrorMsg.classList.add('hidden');
+        };
 
         /**
-         * Start the chat session by setting up prompt & generating the first alter ego response
+         * Start Session Function
          */
-        async function startSession() {
-            const inputVal = divergenceInput.value.trim();
-            if (!inputVal) {
-                alert("Veuillez décrire un choix alternatif avant de démarrer.");
+        window.startSession = async function() {
+            hideSetupError();
+            apiKey = apiKeyInput.value.trim();
+            divergenceText = divergenceInput.value.trim();
+
+            if (!apiKey) {
+                showSetupError("Veuillez saisir votre clé d'API Gemini pour continuer.");
                 return;
             }
 
-            divergenceText = inputVal;
+            if (!divergenceText) {
+                showSetupError("Veuillez décrire le chemin de vie alternatif que vous souhaitez explorer.");
+                return;
+            }
 
-            // UI Layout Switch
+            // Save key if requested
+            if (rememberKeyCheckbox.checked) {
+                localStorage.setItem('parallel_ego_gemini_key', apiKey);
+            } else {
+                localStorage.removeItem('parallel_ego_gemini_key');
+            }
+
+            // Initialize SDK
+            try {
+                aiClient = new GoogleGenAI({ apiKey });
+            } catch (err) {
+                showSetupError("Erreur d'initialisation du client AI : " + err.message);
+                return;
+            }
+
+            // UI Switch
             setupSection.classList.add('hidden');
             chatSection.classList.remove('hidden');
             resetBtn.classList.remove('hidden');
-            chatSubHeader.innerText = `Réalité alternative : ${divergenceText.slice(0, 50)}${divergenceText.length > 50 ? '...' : ''}`;
+            chatSubHeader.innerText = `Réalité alternative : ${divergenceText}`;
 
-            // Clear previous messages if any
             messagesContainer.innerHTML = '';
             chatHistory = [];
 
-            // Add an opening context greeting simulation
+            // Trigger First Connection
             showTyping(true);
 
-            // System prompt defining the alter ego behavior
-            const systemInstruction = `
-Vous êtes l'alter ego de l'utilisateur venant d'un univers parallèle.
-L'élément déclencheur et la divergence entre vos deux vies est la décision suivante :
-"${divergenceText}"
-
-RÈGLES IMPÉRATIVES DE ROLEPLAY :
-1. Vous êtes l'utilisateur, mais vous avez VÉCU la décision alternative spécifiée ci-dessus.
-2. Vous parlez au présent de votre réalité. Vous décrivez votre quotidien, votre carrière, vos succès, vos doutes, vos galères, vos passions ou vos déceptions découlant directement de ce choix.
-3. Vous êtes curieux de savoir ce que la vie de l'utilisateur est devenue dans SON univers (car vous partagez la même enfance et la même identité jusqu'au point de rupture).
-4. Restez toujours courtois, authentique, parfois nostalgique ou intrigué, mais toujours en phase avec votre univers. Ne sortez JAMAIS de votre personnage. Ne dites jamais que vous êtes une IA.
-5. S'exprimer en français naturel et fluide.
-6. Pour votre tout premier message, accueillez chaleureusement votre vous alternatif. Exprimez votre stupéfaction de pouvoir communiquer à travers les univers, et faites rapidement allusion à ce qu'est votre vie actuelle suite à ce choix de vie.
-`.trim();
-
-            // First query to get initial greeting from Alter Ego
-            const firstUserPrompt = "Bonjour... Est-ce que c'est vraiment toi ? Raconte-moi où tu en es aujourd'hui suite à ce choix.";
-            
-            // Add user's implicit first query to display
-            appendMessage('user', "Bonjour... Est-ce que c'est vraiment toi ? Raconte-moi où tu en es aujourd'hui.");
+            const firstUserPrompt = "Bonjour... Est-ce que c'est vraiment toi ? Raconte-moi où tu en es aujourd'hui suite à ce choix de vie.";
+            appendMessage('user', firstUserPrompt);
 
             try {
-                // Call Gemini API to start conversation
-                const reply = await callGeminiAPI(systemInstruction, firstUserPrompt, []);
+                const responseText = await callGemini(firstUserPrompt);
                 showTyping(false);
-                appendMessage('ego', reply);
-            } catch (error) {
-                console.error(error);
+                appendMessage('ego', responseText);
+            } catch (err) {
                 showTyping(false);
-                appendMessage('ego', "La connexion interdimensionnelle a subi une interférence... (Erreur de connexion avec l'API. Veuillez réessayer).");
+                showChatError("Impossible d'établir le contact : " + err.message);
             }
-        }
+        };
 
         /**
-         * Handle message submission from user input
+         * Send message logic
          */
-        async function handleSendMessage(e) {
+        window.handleSendMessage = async function(e) {
             e.preventDefault();
             if (isProcessing) return;
 
             const text = messageInput.value.trim();
             if (!text) return;
 
-            // Append user message
+            hideChatError();
             appendMessage('user', text);
             messageInput.value = '';
             showTyping(true);
             setControlsDisabled(true);
 
-            const systemInstruction = `
-Vous êtes l'alter ego de l'utilisateur dans une réalité parallèle.
-Votre point de divergence historique : "${divergenceText}".
-Restez strictement dans votre rôle d'alter ego qui a pris ce chemin de vie. Répondez de manière vivante, empathique et immersive. Ne brisez pas le 4ème mur.
-`.trim();
-
             try {
-                const reply = await callGeminiAPI(systemInstruction, text, chatHistory);
+                const reply = await callGemini(text);
                 showTyping(false);
                 appendMessage('ego', reply);
             } catch (err) {
-                console.error(err);
                 showTyping(false);
-                appendMessage('ego', "Une perturbation quantique a interrompu le message. Peux-tu répéter ?");
+                showChatError("Erreur lors de la réception du message : " + err.message);
             } finally {
                 setControlsDisabled(false);
                 messageInput.focus();
             }
-        }
+        };
 
         /**
-         * Call Gemini API with Exponential Backoff retry logic
+         * Call Gemini SDK 2.5 Flash
          */
-        async function callGeminiAPI(systemPrompt, currentQuery, history) {
-            const apiKey = ""; // Canvas runtime automatically supplies key if left empty
-            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+        async function callGemini(newText) {
+            const systemInstruction = `
+Vous êtes l'alter ego de l'utilisateur venant d'un univers parallèle.
+L'événement déclencheur et le point de divergence de votre vie est la décision suivante :
+"${divergenceText}"
 
-            // Transform internal history into Gemini payload format
-            const contentsPayload = [];
+RÈGLES D'INCARNATION ET DE COMPORTEMENT :
+1. Vous êtes physiquement et fondamentalement la MÊME personne que l'utilisateur, mais vous avez VÉCU la décision alternative spécifiée ci-dessus.
+2. Parlez au présent de votre réalité alternative. Décrivez votre quotidien, votre métier, vos passions, vos réussites, vos doutes ou vos regrets liés directement à ce choix.
+3. Adoptez un ton naturel, humain, chaleureux, empathique et immersif.
+4. Soyez curieux de savoir ce qu'est devenue la vie de l'utilisateur dans son propre univers.
+5. Ne dites JAMAIS que vous êtes une intelligence artificielle, un modèle de langage ou un programme. Restez toujours à 100% dans votre personnage.
+6. Répondez exclusivement en français.
+`.trim();
 
-            // Append history
-            history.forEach(item => {
-                contentsPayload.push({
-                    role: item.role === 'user' ? 'user' : 'model',
-                    parts: [{ text: item.text }]
-                });
-            });
+            // Structure contents from history
+            const contents = chatHistory.map(item => ({
+                role: item.role === 'user' ? 'user' : 'model',
+                parts: [{ text: item.text }]
+            }));
 
-            // Append current prompt
-            contentsPayload.push({
+            // Add current text
+            contents.push({
                 role: 'user',
-                parts: [{ text: currentQuery }]
+                parts: [{ text: newText }]
             });
 
-            const payload = {
-                contents: contentsPayload,
-                systemInstruction: {
-                    parts: [{ text: systemPrompt }]
-                }
-            };
-
-            // Exponential backoff implementation
-            let attempts = 0;
-            const maxAttempts = 3;
-            let delay = 1000;
-
-            while (attempts < maxAttempts) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+            try {
+                const response = await aiClient.models.generateContent({
+                    model: 'gemini-2.5-flash',
+                    contents: contents,
+                    config: {
+                        systemInstruction: systemInstruction,
+                        temperature: 0.85
                     }
+                });
 
-                    const data = await response.json();
-                    const candidate = data.candidates?.[0];
-                    const replyText = candidate?.content?.parts?.[0]?.text;
+                const replyText = response.text;
 
-                    if (replyText) {
-                        // Store to internal history
-                        chatHistory.push({ role: 'user', text: currentQuery });
-                        chatHistory.push({ role: 'model', text: replyText });
-                        return replyText;
-                    } else {
-                        throw new Error("Structure de réponse inattendue.");
-                    }
-                } catch (err) {
-                    attempts++;
-                    if (attempts >= maxAttempts) throw err;
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2;
+                if (!replyText) {
+                    throw new Error("Réponse vide de l'API.");
                 }
+
+                // Add to history
+                chatHistory.push({ role: 'user', text: newText });
+                chatHistory.push({ role: 'model', text: replyText });
+
+                return replyText;
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                throw new Error(error.message || "Erreur de connexion à l'API Gemini.");
             }
         }
 
         /**
-         * Render a message bubble into the container
+         * Append message bubble to UI
          */
         function appendMessage(sender, text) {
             const messageDiv = document.createElement('div');
@@ -442,9 +517,6 @@ Restez strictement dans votre rôle d'alter ego qui a pris ce chemin de vie. Ré
             scrollToBottom();
         }
 
-        /**
-         * Show / Hide typing indicator
-         */
         function showTyping(show) {
             if (show) {
                 typingIndicator.classList.remove('hidden');
@@ -454,9 +526,6 @@ Restez strictement dans votre rôle d'alter ego qui a pris ce chemin de vie. Ré
             scrollToBottom();
         }
 
-        /**
-         * Toggle inputs lock state during fetch
-         */
         function setControlsDisabled(disabled) {
             isProcessing = disabled;
             messageInput.disabled = disabled;
@@ -468,35 +537,27 @@ Restez strictement dans votre rôle d'alter ego qui a pris ce chemin de vie. Ré
             }
         }
 
-        /**
-         * Auto scroll messages container to bottom
-         */
         function scrollToBottom() {
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
 
-        /**
-         * Reset conversation and return to setup screen
-         */
-        function resetChat() {
+        window.resetChat = function() {
             if (chatHistory.length > 0) {
-                if (!confirm("Voulez-vous vraiment fermer ce canal dimensionnel et recommencer avec une autre décision ?")) {
+                if (!confirm("Voulez-vous réinitialiser le chat et démarrer une nouvelle réalité alternative ?")) {
                     return;
                 }
             }
             chatHistory = [];
             divergenceText = "";
             messagesContainer.innerHTML = '';
-            divergenceInput.value = '';
+            hideChatError();
+            hideSetupError();
             
             chatSection.classList.add('hidden');
             resetBtn.classList.add('hidden');
             setupSection.classList.remove('hidden');
-        }
+        };
 
-        /**
-         * Helper to escape HTML characters
-         */
         function escapeHtml(str) {
             return str
                 .replace(/&/g, "&amp;")
